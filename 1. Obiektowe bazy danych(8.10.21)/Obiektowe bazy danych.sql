@@ -176,53 +176,6 @@ WHERE tk.column_value = 'marchew'
 ) e
 WHERE e.column_value = 'marchew';
 
--- zad 23
-
-ALTER TYPE AUTO NOT FINAL CASCADE;
-
-CREATE TYPE auto_osobowe UNDER AUTO (
- liczba_miejsc number,
- klimatyzacja VARCHAR2(5),
- OVERRIDING MEMBER FUNCTION WARTOSC RETURN NUMBER
-)
-
-CREATE TYPE BODY auto_osobowe AS
-    OVERRIDING MEMBER FUNCTION WARTOSC RETURN NUMBER IS
-    BEGIN
-        if (klimatyzacja= 'tak') then
-            RETURN cena*1.5;
-        else
-            RETURN cena;
-        end if;
-    END WARTOSC;
-END;
-
-
-CREATE TYPE auto_ciezarowe UNDER AUTO (
- ladownosc number,
- OVERRIDING MEMBER FUNCTION WARTOSC RETURN NUMBER
-)
-
-CREATE TYPE BODY auto_ciezarowe AS
-    OVERRIDING MEMBER FUNCTION WARTOSC RETURN NUMBER IS
-    BEGIN
-        if (ladownosc>10) then
-            RETURN cena*2;
-        else
-            RETURN cena;
-        end if;
-    END WARTOSC;
-END;
-
--- inconsistent datatypes: expected %s got %s
-INSERT INTO AUTA VALUES (new Auto_osobowe('FIAT1','BRAVA',60000,DATE '1999-11-30',25000,4,'tak'));
-INSERT INTO AUTA VALUES (new Auto_osobowe('FIAT2','BRAVA',60000,DATE '1999-11-30',25000,4,'nie'));
-INSERT INTO AUTA VALUES (new auto_ciezarowe('FIAT3','BRAVA',60000,DATE '1999-11-30',25000,8));
-INSERT INTO AUTA VALUES (new auto_ciezarowe('FIAT4','BRAVA',60000,DATE '1999-11-30',25000,12));
-
-SELECT a.MARKA, a.WARTOSC() FROM AUTA a;
-
-
 
 -- zad 22
 
@@ -268,3 +221,49 @@ SELECT p.ID_PISARZA, p.NAZWISKO, p.DATA_UR CAST( MULTISET(
     SELECT NEW KSIAZKA_type(ID_KSIAZKI,ID_PISARZA,TYTUL,DATA_WYDANIE)
     FROM KSIAZKI WHERE ID_PISARZA = p.ID_PISARZA) AS dziela)
 FROM PISARZE p;
+
+-- zad 23
+
+ALTER TYPE AUTO NOT FINAL CASCADE;
+
+CREATE TYPE auto_osobowe UNDER AUTO (
+ liczba_miejsc number,
+ klimatyzacja VARCHAR2(5),
+ OVERRIDING MEMBER FUNCTION WARTOSC RETURN NUMBER
+)
+
+CREATE TYPE BODY auto_osobowe AS
+    OVERRIDING MEMBER FUNCTION WARTOSC RETURN NUMBER IS
+    BEGIN
+        if (klimatyzacja= 'tak') then
+            RETURN cena*1.5;
+        else
+            RETURN cena;
+        end if;
+    END WARTOSC;
+END;
+
+
+CREATE TYPE auto_ciezarowe UNDER AUTO (
+ ladownosc number,
+ OVERRIDING MEMBER FUNCTION WARTOSC RETURN NUMBER
+)
+
+CREATE TYPE BODY auto_ciezarowe AS
+    OVERRIDING MEMBER FUNCTION WARTOSC RETURN NUMBER IS
+    BEGIN
+        if (ladownosc>10) then
+            RETURN cena*2;
+        else
+            RETURN cena;
+        end if;
+    END WARTOSC;
+END;
+
+-- inconsistent datatypes: expected %s got %s
+INSERT INTO AUTA VALUES (new Auto_osobowe('FIAT1','BRAVA',60000,DATE '1999-11-30',25000,4,'tak'));
+INSERT INTO AUTA VALUES (new Auto_osobowe('FIAT2','BRAVA',60000,DATE '1999-11-30',25000,4,'nie'));
+INSERT INTO AUTA VALUES (new auto_ciezarowe('FIAT3','BRAVA',60000,DATE '1999-11-30',25000,8));
+INSERT INTO AUTA VALUES (new auto_ciezarowe('FIAT4','BRAVA',60000,DATE '1999-11-30',25000,12));
+
+SELECT a.MARKA, a.WARTOSC() FROM AUTA a;
